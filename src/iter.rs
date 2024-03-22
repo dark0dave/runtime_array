@@ -17,8 +17,8 @@ impl<'b, T: Serialize + for<'a> Deserialize<'a> + Copy> Iter<'b, T> {
         let ptr = array.pointer;
         Self {
             marker: PhantomData,
-            ptr,
-            end: unsafe { ptr.add(array.size - 1) },
+            ptr: ptr.as_ptr(),
+            end: unsafe { ptr.as_ptr().add(array.size - 1) },
             done: false,
         }
     }
@@ -32,11 +32,11 @@ impl<'a, T> Iterator for Iter<'a, T> {
             return None;
         }
         if self.ptr == self.end {
-            self.done = true
+            self.done = true;
         }
         let ptr = self.ptr;
         unsafe {
-            self.ptr = self.ptr.add(1);
+            self.ptr = ptr.add(1);
             Some(&*ptr)
         }
     }
